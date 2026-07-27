@@ -19,7 +19,8 @@
     <hr>
     <main>
         <h1>Create a New Blog Post</h1>
-        <form>
+        <div id="message"></div>
+        <form id="blogForm" action ="/add-blog" method="POST">
             <div>
                 <label for="title">Blog Title:</label><br>
                 <input type="text" id="title" name="title" placeholder="Enter title" required>
@@ -37,5 +38,6 @@
     <footer>
         <p>&copy; 2026 My Blog Management System. All Rights Reserved.</p>
     </footer>
+    <script src="script.js"></script>
 </body>
 </html>
