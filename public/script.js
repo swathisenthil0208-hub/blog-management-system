@@ -6,18 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (blogForm) {
         blogForm.addEventListener('submit', (e) => {
-            // ALWAYS STOP DEFAULT FORM SUBMISSION TO BACKEND
-            e.preventDefault();
-
             const title = titleInput.value.trim();
             const content = contentInput.value.trim();
 
-            // Clear previous message
-            messageBox.textContent = '';
-            messageBox.className = '';
-
             // 1. Validation: Empty fields
             if (title === '' || content === '') {
+                e.preventDefault(); // Stop submission on error
                 messageBox.textContent = '❌ Please fill out all fields!';
                 messageBox.style.color = 'red';
                 messageBox.style.marginBottom = '15px';
@@ -26,19 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Validation: Title length
             if (title.length < 5) {
+                e.preventDefault(); // Stop submission on error
                 messageBox.textContent = '⚠️ Title must be at least 5 characters long!';
                 messageBox.style.color = 'orange';
                 messageBox.style.marginBottom = '15px';
                 return;
             }
 
-            // 3. Success feedback
-            messageBox.textContent = '✅ Blog published successfully (JS Verified)!';
-            messageBox.style.color = 'green';
-            messageBox.style.marginBottom = '15px';
-
-            // Reset form fields after successful submit
-            blogForm.reset();
+            // Validation passed! Form will naturally submit to POST /add-blog
         });
     }
 });
