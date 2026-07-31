@@ -4,25 +4,48 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Middleware for parsing form data & serving static files
+// Middleware for parsing JSON and Form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-// Temporary array to store blogs in memory
+// 1. JavaScript Array to store blog posts in memory
 let blogs = [];
 
-// 1. GET Route: Home Page
+// GET Route: Home Page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 2. GET Route: Add Blog Page
+// GET Route: Add Blog Page
 app.get('/add-blog', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'add-blog.html'));
 });
 
-// 3. POST Route: Save New Blog
+// 2. API / POST Route: Add blog post to the JS array
+app.post('/api/blogs', (req, res) => {
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+        return res.status(400).json({ success: false, message: 'Title and content are required!' });
+    }
+
+    const newBlog = {
+        id: blogs.length + 1,
+        title:title,
+        content:content,
+        date: new Date().toLocaleDateString()
+    };
+
+    // Store in JS Array
+    blogs.push(newBlog);
+    console.log('Updated Blog Array:', blogs);
+
+    // Send JSON Response or Redirect
+    res.redirect('/');
+});
+
+// Also support legacy /add-blog POST if needed
 app.post('/add-blog', (req, res) => {
     const { title, content } = req.body;
 
@@ -38,13 +61,12 @@ app.post('/add-blog', (req, res) => {
     };
 
     blogs.push(newBlog);
-    console.log('New Blog Added:', newBlog);
+    console.log('Updated Blog Array:', blogs);
 
-    // Redirect to home or send success response
     res.redirect('/');
 });
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
