@@ -53,7 +53,7 @@ app.post('/api/blogs', (req, res) => {
     res.redirect('/');
 });
 
-// POST API: Update Existing Blog Post (Day 8 Task 🚀)
+// POST API: Update Existing Blog Post (Day 8 Task)
 app.post('/api/blogs/update/:id', (req, res) => {
     const blogId = parseInt(req.params.id);
     const { title, content } = req.body;
@@ -68,20 +68,11 @@ app.post('/api/blogs/update/:id', (req, res) => {
     res.redirect('/');
 });
 
-// Support Legacy Form Submit Route
-app.post('/add-blog', (req, res) => {
-    const { title, content } = req.body;
-    if (!title || !content) {
-        return res.status(400).send('Title and Content are required!');
-    }
-    const newBlog = {
-        id: blogs.length > 0 ? blogs[blogs.length - 1].id + 1 : 1,
-        title: title,
-        content: content,
-        date: new Date().toLocaleDateString()
-    };
-    blogs.push(newBlog);
-    res.redirect('/');
+// DELETE API: Delete Blog Post by ID (Day 9 Task 🔥)
+app.delete('/api/blogs/:id', (req, res) => {
+    const blogId = parseInt(req.params.id);
+    blogs = blogs.filter(b => b.id !== blogId);
+    res.json({ success: true, message: 'Blog deleted successfully!' });
 });
 
 // Start Server
