@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const blogForm = document.getElementById('blogForm');
     const blogList = document.getElementById('blogList');
 
-    // 1. Home Page-la Blogs Fetch Panni Display Panra Logic
+    // Fetch and Display Blogs with Edit Button
     if (blogList) {
         fetch('/api/blogs')
             .then(res => {
@@ -13,25 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(blogs => {
                 if (!Array.isArray(blogs) || blogs.length === 0) {
-                    blogList.innerHTML = '<p style="color: gray;">No blogs published yet. Add one!</p>';
+                    blogList.innerHTML = '<p style="color: #64748b; text-align: center;">No blogs published yet. Add one!</p>';
                     return;
                 }
 
                 blogList.innerHTML = blogs.map(blog => `
-                    <div class="blog-card" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
-                        <h3 style="margin-top: 0;">${blog.title}</h3>
-                        <small style="color: gray;">Published on: ${blog.date}</small>
-                        <p style="margin-top: 10px;">${blog.content}</p>
+                    <div class="blog-card">
+                        <h3>${blog.title}</h3>
+                        <small>📅 Published on: ${blog.date}</small>
+                        <p>${blog.content}</p>
+                        <a href="/edit-blog.html?id=${blog.id}" style="display: inline-block; margin-top: 12px; padding: 6px 14px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">✏️ Edit Blog</a>
                     </div>
                 `).join('');
             })
             .catch(err => {
                 console.error('Error fetching blogs:', err);
-                blogList.innerHTML = '<p style="color: red;">Failed to load blogs.</p>';
+                blogList.innerHTML = '<p style="color: #ef4444; text-align: center;">Failed to load blogs.</p>';
             });
     }
 
-    // 2. Add Blog Form Validation Logic
+    // Add Blog Form Validation
     if (blogForm) {
         const titleInput = document.getElementById('title');
         const contentInput = document.getElementById('content');
@@ -44,16 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (title === '' || content === '') {
                 e.preventDefault();
                 messageBox.textContent = '❌ Please fill out all fields!';
-                messageBox.style.color = 'red';
+                messageBox.style.color = '#ef4444';
                 return;
             }
 
             if (title.length < 5) {
                 e.preventDefault();
                 messageBox.textContent = '⚠️ Title must be at least 5 characters long!';
-                messageBox.style.color = 'orange';
+                messageBox.style.color = '#f59e0b';
                 return;
             }
         });
     }
-})
+});

@@ -9,69 +9,82 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-// 1. In-Memory JavaScript Array to store blog posts
+// In-Memory JS Array to store blog posts
 let blogs = [];
 
-// GET Route: Home Page
+// GET: Home Page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// GET Route: Add Blog Page
+// GET: Add Blog Page
 app.get('/add-blog', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'add-blog.html'));
 });
 
-// 2. GET API: Fetch all blogs for Home Page (Day 7 Task)
+// GET API: Fetch all blogs for Home Page
 app.get('/api/blogs', (req, res) => {
     res.json(blogs);
 });
 
-// 3. POST API: Add new blog post to JS Array
+// GET API: Fetch single blog by ID (For Edit Form Pre-fill)
+app.get('/api/blogs/:id', (req, res) => {
+    const blogId = parseInt(req.params.id);
+    const blog = blogs.find(b => b.id === blogId);
+    if (!blog) {
+        return res.status(404).json({ message: 'Blog not found' });
+    }
+    res.json(blog);
+});
+
+// POST API: Add New Blog Post
 app.post('/api/blogs', (req, res) => {
     const { title, content } = req.body;
-
     if (!title || !content) {
-        return res.status(400).json({ success: false, message: 'Title and content are required!' });
+        return res.status(400).send('Title and content are required!');
     }
-
     const newBlog = {
-        id: blogs.length + 1,
+        id: blogs.length > 0 ? blogs[blogs.length - 1].id + 1 : 1,
         title: title,
         content: content,
         date: new Date().toLocaleDateString()
     };
-
-    // Push to JS Array
     blogs.push(newBlog);
-    console.log('Updated Blog Array:', blogs);
-
-    // Redirect to Home Page
     res.redirect('/');
 });
 
-// Support legacy /add-blog POST form action
-app.post('/add-blog', (req, res) => {
+// POST API: Update Existing Blog Post (Day 8 Task 🚀)
+app.post('/api/blogs/update/:id', (req, res) => {
+    const blogId = parseInt(req.params.id);
     const { title, content } = req.body;
 
+    const blogIndex = blogs.findIndex(b => b.id === blogId);
+    if (blogIndex !== -1) {
+        blogs[blogIndex].title = title;
+        blogs[blogIndex].content = content;
+        blogs[blogIndex].date = new Date().toLocaleDateString() + ' (Edited)';
+    }
+
+    res.redirect('/');
+});
+
+// Support Legacy Form Submit Route
+app.post('/add-blog', (req, res) => {
+    const { title, content } = req.body;
     if (!title || !content) {
         return res.status(400).send('Title and Content are required!');
     }
-
     const newBlog = {
-        id: blogs.length + 1,
+        id: blogs.length > 0 ? blogs[blogs.length - 1].id + 1 : 1,
         title: title,
         content: content,
         date: new Date().toLocaleDateString()
     };
-
     blogs.push(newBlog);
-    console.log('Updated Blog Array:', blogs);
-
     res.redirect('/');
 });
 
 // Start Server
 app.listen(PORT, () => {
-    console.log('Server running on http://localhost:' + PORT);
+    console.log('🚀 Server running on http://localhost:' + PORT);
 });
