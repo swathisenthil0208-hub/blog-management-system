@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-// 1. JavaScript Array to store blog posts in memory
+// 1. In-Memory JavaScript Array to store blog posts
 let blogs = [];
 
 // GET Route: Home Page
@@ -22,7 +22,12 @@ app.get('/add-blog', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'add-blog.html'));
 });
 
-// 2. API / POST Route: Add blog post to the JS array
+// 2. GET API: Fetch all blogs for Home Page (Day 7 Task)
+app.get('/api/blogs', (req, res) => {
+    res.json(blogs);
+});
+
+// 3. POST API: Add new blog post to JS Array
 app.post('/api/blogs', (req, res) => {
     const { title, content } = req.body;
 
@@ -32,20 +37,20 @@ app.post('/api/blogs', (req, res) => {
 
     const newBlog = {
         id: blogs.length + 1,
-        title:title,
-        content:content,
+        title: title,
+        content: content,
         date: new Date().toLocaleDateString()
     };
 
-    // Store in JS Array
+    // Push to JS Array
     blogs.push(newBlog);
     console.log('Updated Blog Array:', blogs);
 
-    // Send JSON Response or Redirect
+    // Redirect to Home Page
     res.redirect('/');
 });
 
-// Also support legacy /add-blog POST if needed
+// Support legacy /add-blog POST form action
 app.post('/add-blog', (req, res) => {
     const { title, content } = req.body;
 
@@ -55,8 +60,8 @@ app.post('/add-blog', (req, res) => {
 
     const newBlog = {
         id: blogs.length + 1,
-        title,
-        content,
+        title: title,
+        content: content,
         date: new Date().toLocaleDateString()
     };
 
@@ -68,5 +73,5 @@ app.post('/add-blog', (req, res) => {
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Server running on http://localhost:' + PORT);
 });
