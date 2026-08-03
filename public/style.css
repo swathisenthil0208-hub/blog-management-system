@@ -123,3 +123,14 @@ footer {
 hr {
     display: none; /* Old hr line-a hide pannidalam */
 }
+/* Smooth Scroll & Hover Effects */
+html { scroll-behavior: smooth; }
+
+button, .card, a {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover, .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
