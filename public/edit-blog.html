@@ -7,46 +7,61 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <header>
-        <nav>
+        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #333; color: white;">
             <h2>My Blog App</h2>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/add-blog">Add Blog</a></li>
+            <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+                <li><a href="/" style="color: white; text-decoration: none; font-weight: bold;">Home</a></li>
+                <li><a href="/add-blog" style="color: white; text-decoration: none;">Add Blog</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
+    <main style="max-width: 600px; margin: 30px auto; padding: 0 20px;">
         <h1>Edit Blog Post</h1>
-        <form id="editForm" method="POST">
+        
+        <form id="editForm" action="/api/blogs-update" method="POST">
+            <!-- Hidden Input to pass the Blog ID to the server -->
+            <input type="hidden" id="blogId" name="id">
+
             <div style="margin-bottom: 15px;">
                 <label for="title" style="font-weight: 600;">Blog Title:</label><br>
-                <input type="text" id="title" name="title" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px;">
+                <input type="text" id="title" name="title" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
             </div>
+
             <div style="margin-bottom: 15px;">
                 <label for="content" style="font-weight: 600;">Blog Content:</label><br>
-                <textarea id="content" name="content" rows="6" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+                <textarea id="content" name="content" rows="6" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
             </div>
-            <button type="submit" style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Update Blog</button>
+
+            <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Update Blog</button>
         </form>
     </main>
 
     <script>
+        // Extract 'id' from URL query params (e.g., /edit-blog.html?id=1)
         const urlParams = new URLSearchParams(window.location.search);
         const blogId = urlParams.get('id');
 
         if (blogId) {
-            const editForm = document.getElementById('editForm');
-            editForm.action = `/api/blogs/update/${blogId}`;
+            // Set hidden input value
+            document.getElementById('blogId').value = blogId;
 
-            fetch(`/api/blogs/${blogId}`)
-                .then(res => res.json())
+            // Fetch existing blog data to populate the form
+            fetch('/api/blogs/' + blogId)
+                .then(res => {
+                    if (!res.ok) throw new Error('Blog not found');
+                    return res.json();
+                })
                 .then(blog => {
                     document.getElementById('title').value = blog.title;
                     document.getElementById('content').value = blog.content;
                 })
-                .catch(err => console.error('Error fetching blog:', err));
+                .catch(err => {
+                    console.error('Error fetching blog:', err);
+                    alert('Could not load blog details!');
+                });
         }
     </script>
 </body>
