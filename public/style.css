@@ -134,3 +134,41 @@ button:hover, .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
+/* Responsive Design & Clean Layout */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .container, .card-container {
+    width: 100%;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  input, textarea, button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+/* Day 13 - Mobile Responsiveness Fix */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  header nav {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  main {
+    padding: 0 10px;
+  }
+
+  input, textarea, button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
