@@ -1,11 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=./public/index.html">
-  <title>Redirecting...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog App</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <p>Redirecting to <a href="./public/index.html">Blog App</a>...</p>
+
+    <header>
+        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #333; color: white;">
+            <h2>My Blog App</h2>
+            <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+                <li><a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">Home</a></li>
+                <li><a href="add-blog.html" style="color: white; text-decoration: none;">Add Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="max-width: 800px; margin: 30px auto; padding: 0 20px;">
+        <h1 style="border-bottom: 2px solid #333; padding-bottom: 10px;">All Blog Posts</h1>
+        
+        <!-- Container where script.js will dynamically insert blogs -->
+        <div id="blogList" style="margin-top: 20px;">
+            <p>Loading blogs...</p>
+        </div>
+    </main>
+
+    <!-- JS File link -->
+    <script src="script.js"></script>
 </body>
 </html>
