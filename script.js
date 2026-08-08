@@ -1,52 +1,106 @@
-// Fetch and display all blogs on the Index page
-function fetchBlogs() {
-    const blogList = document.getElementById('blogList');
-    if (!blogList) return; // Exit if not on index page
-
-    fetch('/api/blogs')
-        .then(res => res.json())
-        .then(blogs => {
-            blogList.innerHTML = '';
-            if (blogs.length === 0) {
-                blogList.innerHTML = '<p>No blogs found. Add one!</p>';
-                return;
-            }
-
-            blogs.forEach(blog => {
-                const blogCard = document.createElement('div');
-                blogCard.className = 'blog-card';
-                blogCard.style.cssText = 'border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 6px;';
-                
-                blogCard.innerHTML = `
-                    <h3>${blog.title}</h3>
-                    <p>${blog.content}</p>
-                    <small><b>Posted on:</b> ${blog.date}</small>
-                    <div style="margin-top: 10px;">
-                        <a href="/edit-blog.html?id=${blog.id}" style="padding: 5px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">Edit</a>
-                        <button onclick="deleteBlog(${blog.id})" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
-                    </div>
-                `;
-                blogList.appendChild(blogCard);
-            });
-        })
-        .catch(err => console.error('Error fetching blogs:', err));
+// Function to get blogs from localStorage
+function getBlogs() {
+  return JSON.parse(localStorage.getItem("blogs")) || [];
 }
 
-// Function to delete a blog
-function deleteBlog(id) {
-    if (confirm('Are you sure you want to delete this blog?')) {
-        fetch('/api/blogs/' + id, {
-            method: 'DELETE'
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                fetchBlogs(); // Refresh blog list after delete
-            }
-        })
-        .catch(err => console.error('Error deleting blog:', err));
+// Function to save blogs to localStorage
+function saveBlogs(blogs) {
+  localStorage.setItem("blogs", JSON.stringify(blogs));
+}
+
+// DOM Event Listener
+document.addEventListener("DOMContentLoaded", () => {
+  const blogList = document.getElementById("blogList");
+  const blogForm = document.getElementById("blogForm");
+  const editForm = document.getElementById("editForm");
+
+  // --- 1. HOME PAGE (Display Blogs) ---
+  if (blogList) {
+    const blogs = getBlogs();
+
+    if (blogs.length === 0) {
+      blogList.innerHTML = "<p>No blogs found. Click 'Add Blog' to create one!</p>";
+      return;
     }
-}
 
-// Run fetch function on page load
-document.addEventListener('DOMContentLoaded', fetchBlogs);
+    blogList.innerHTML = blogs.map((blog, index) => `
+      <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+        <h3>${blog.title}</h3>
+        <p>${blog.content}</p>
+        <small>Author: ${blog.author || 'Anonymous'}</small><br><br>
+        <a href="edit-blog.html?id=${index}" style="background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 14px; margin-right: 10px;">Edit</a>
+        <button onclick="deleteBlog(${index})" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">Delete</button>
+      </div>
+    `).join("");
+  }
+
+  // --- 2. ADD BLOG PAGE ---
+  if (blogForm) {
+    blogForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const author = document.getElementById("author").value;
+      const content = document.getElementById("content").value;
+
+      const blogs = getBlogs();
+      blogs.push({ title, author, content });
+      saveBlogs(blogs);
+
+      const message = document.getElementById("message");
+      if (message) {
+        message.innerHTML = "<p style='color: green;'>Blog added successfully!</p>";
+      }
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1000);
+    });
+  }
+
+  // --- 3. EDIT BLOG PAGE ---
+  if (editForm) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const blogIndex = urlParams.get("id");
+    const blogs = getBlogs();
+
+    if (blogIndex !== null && blogs[blogIndex]) {
+      const blog = blogs[blogIndex];
+      document.getElementById("title").value = blog.title;
+      document.getElementById("author").value = blog.author || "";
+      document.getElementById("content").value = blog.content;
+
+      editForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        blogs[blogIndex] = {
+          title: document.getElementById("title").value,
+          author: document.getElementById("author").value,
+          content: document.getElementById("content").value
+        };
+
+        saveBlogs(blogs);
+
+        const message = document.getElementById("message");
+        if (message) {
+          message.innerHTML = "<p style='color: green;'>Blog updated successfully!</p>";
+        }
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      });
+    } else {
+      const message = document.getElementById("message");
+      if (message) {
+        message.innerHTML = "<p style='color: red;'>Blog not found!</p>";
+      }
+    }
+  }
+});
+
+// --- 4. DELETE BLOG FUNCTION ---
+function deleteBlog(index) {
+  let blogs = getBlogs();
+  blogs.splice(index, 1);
+  saveBlogs(blogs);
+  location.reload();
+}

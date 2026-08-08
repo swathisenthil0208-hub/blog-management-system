@@ -1,68 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Blog</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog App - Edit Blog</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #333; color: white;">
+      <h2 style="margin: 0;">My Blog App</h2>
+      <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+        <li><a href="index.html" style="color: white; text-decoration: none;">Home</a></li>
+        <li><a href="add-blog.html" style="color: white; text-decoration: none;">Add Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+  <hr>
+  <main style="padding: 20px;">
+    <h1>Edit Blog Post</h1>
+    <div id="message"></div>
+    <form id="editForm" style="display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
+      <div>
+        <label>Title:</label><br>
+        <input type="text" id="title" required style="width: 100%; padding: 8px;">
+      </div>
+      <div>
+        <label>Author:</label><br>
+        <input type="text" id="author" style="width: 100%; padding: 8px;">
+      </div>
+      <div>
+        <label>Content:</label><br>
+        <textarea id="content" rows="5" required style="width: 100%; padding: 8px;"></textarea>
+      </div>
+      <button type="submit" style="padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer;">Update Blog</button>
+    </form>
+  </main>
 
-    <header>
-        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #333; color: white;">
-            <h2>My Blog App</h2>
-            <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
-                <li><a href="/" style="color: white; text-decoration: none; font-weight: bold;">Home</a></li>
-                <li><a href="/add-blog" style="color: white; text-decoration: none;">Add Blog</a></li>
-            </ul>
-        </nav>
-    </header>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const blogIndex = urlParams.get("id");
+      const blogs = JSON.parse(localStorage.getItem("blogs")) || [];
 
-    <main style="max-width: 600px; margin: 30px auto; padding: 0 20px;">
-        <h1>Edit Blog Post</h1>
+      if (blogIndex === null || !blogs[blogIndex]) {
+        document.getElementById("message").innerHTML = "<p style='color: red;'>Blog not found!</p>";
+        return;
+      }
+
+      const blog = blogs[blogIndex];
+      document.getElementById("title").value = blog.title;
+      document.getElementById("author").value = blog.author || "";
+      document.getElementById("content").value = blog.content;
+
+      document.getElementById("editForm").addEventListener("submit", (e) => {
+        e.preventDefault();
         
-        <form id="editForm" action="/api/blogs-update" method="POST">
-            <!-- Hidden Input to pass the Blog ID to the server -->
-            <input type="hidden" id="blogId" name="id">
+        blogs[blogIndex] = {
+          title: document.getElementById("title").value,
+          author: document.getElementById("author").value,
+          content: document.getElementById("content").value
+        };
 
-            <div style="margin-bottom: 15px;">
-                <label for="title" style="font-weight: 600;">Blog Title:</label><br>
-                <input type="text" id="title" name="title" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            </div>
+        localStorage.setItem("blogs", JSON.stringify(blogs));
 
-            <div style="margin-bottom: 15px;">
-                <label for="content" style="font-weight: 600;">Blog Content:</label><br>
-                <textarea id="content" name="content" rows="6" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
-            </div>
+        const message = document.getElementById("message");
+        message.innerHTML = "<p style='color: green;'>Blog updated successfully!</p>";
 
-            <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Update Blog</button>
-        </form>
-    </main>
-
-    <script>
-        // Extract 'id' from URL query params (e.g., /edit-blog.html?id=1)
-        const urlParams = new URLSearchParams(window.location.search);
-        const blogId = urlParams.get('id');
-
-        if (blogId) {
-            // Set hidden input value
-            document.getElementById('blogId').value = blogId;
-
-            // Fetch existing blog data to populate the form
-            fetch('/api/blogs/' + blogId)
-                .then(res => {
-                    if (!res.ok) throw new Error('Blog not found');
-                    return res.json();
-                })
-                .then(blog => {
-                    document.getElementById('title').value = blog.title;
-                    document.getElementById('content').value = blog.content;
-                })
-                .catch(err => {
-                    console.error('Error fetching blog:', err);
-                    alert('Could not load blog details!');
-                });
-        }
-    </script>
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      });
+    });
+  </script>
 </body>
 </html>

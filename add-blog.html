@@ -1,43 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog App - Add Blog</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog App - Add Blog</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <h2>My Blog App</h2>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="add-blog.html">Add Blog</a></li>
-            </ul>
-        </nav>
-    </header>
-    <hr>
-    <main>
-        <h1>Create a New Blog Post</h1>
-        <div id="message"></div>
-        <form id="blogForm" action ="/api/blogs" method="POST">
-            <div>
-                <label for="title">Blog Title:</label><br>
-                <input type="text" id="title" name="title" placeholder="Enter title" required>
-            </div>
-            <br>
-            <div>
-                <label for="content">Blog Content:</label><br>
-                <textarea id="content" name="content" rows="5" placeholder="Write your content here..." required></textarea>
-            </div>
-            <br>
-            <button type="submit">Publish Blog</button>
-        </form>
-    </main>
-    <hr>
-    <footer>
-        <p>&copy; 2026 My Blog Management System. All Rights Reserved.</p>
-    </footer>
-    <script src="script.js"></script>
+  <header>
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #333; color: white;">
+      <h2 style="margin: 0;">My Blog App</h2>
+      <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+        <li><a href="index.html" style="color: white; text-decoration: none;">Home</a></li>
+        <li><a href="add-blog.html" style="color: white; text-decoration: none; font-weight: bold;">Add Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+  <hr>
+  <main style="padding: 20px;">
+    <h1>Create a New Blog Post</h1>
+    <div id="message"></div>
+    <form id="blogForm" style="display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
+      <div>
+        <label>Title:</label><br>
+        <input type="text" id="title" required style="width: 100%; padding: 8px;">
+      </div>
+      <div>
+        <label>Author:</label><br>
+        <input type="text" id="author" style="width: 100%; padding: 8px;">
+      </div>
+      <div>
+        <label>Content:</label><br>
+        <textarea id="content" rows="5" required style="width: 100%; padding: 8px;"></textarea>
+      </div>
+      <button type="submit" style="padding: 10px; background-color: green; color: white; border: none; cursor: pointer;">Publish Blog</button>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById("blogForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const author = document.getElementById("author").value;
+      const content = document.getElementById("content").value;
+
+      const blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+      blogs.push({ title, author, content });
+      localStorage.setItem("blogs", JSON.stringify(blogs));
+
+      const message = document.getElementById("message");
+      message.innerHTML = "<p style='color: green;'>Blog added successfully!</p>";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
